@@ -1,0 +1,22 @@
+{
+    "KPlugin": {
+        "Name": "Resize window to 3600x1920+0+0",
+        "Description": "Resize current window to 3600x1920 positioned at top left corner.",
+        "Icon": "preferences-system-windows",
+        "Authors": [
+            {
+                "Email": "korpiq@iki.fi",
+                "Name": "Kalle Hallivuori"
+            }
+        ],
+        "Id": "resizeTo3600x1920x0y0",
+        "ServiceTypes": [
+            "KWin/Script"
+        ],
+        "Version": "1.0",
+        "License": "MIT",
+        "Website": "https://github.com/korpiq/kde-customization"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}
