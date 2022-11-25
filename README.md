@@ -16,3 +16,7 @@ I was able to create this by following these instructions:
 
 Script to restart monitor backgrounds when they go black and unresponsive.
 
+## Caps Lock as Control and Escape keys
+
+Script to make Caps Lock a control key, and make control key emit Escape when pressed shortly.
+
