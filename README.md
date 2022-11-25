@@ -11,3 +11,8 @@ This is my simplistic approach to resize a window onto the whole multiscreen des
 I was able to create this by following these instructions:
 - https://develop.kde.org/docs/extend/plasma/kwin/
 - https://www.reddit.com/r/kde/comments/uct9dp/comment/i6crg1m/?utm_source=share&utm_medium=web2x&context=3
+
+## Restart stuck monitor backgrounds
+
+Script to restart monitor backgrounds when they go black and unresponsive.
+
