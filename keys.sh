@@ -1,4 +1,5 @@
 #!/bin/sh
 
-setxkbmap -option caps:ctrl_modifier
-xcape -e 'Control_L=Escape' -t 200
+killall xcape 2>/dev/null || true
+# setxkbmap -option caps:ctrl_modifier # not working, using kde Caps setting instead
+xcape -e 'Caps_Lock=Escape;Control_R=Escape;Pause=Tab' -t 200
