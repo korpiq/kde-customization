@@ -1,0 +1,13 @@
+[$Version]
+update_info=kwinrules.upd:replace-placement-string-to-enum,kwinrules.upd:use-virtual-desktop-ids
+
+[General]
+count=1
+rules=dadcedea-d2c6-4592-b976-2a24da2e8a7d
+
+[dadcedea-d2c6-4592-b976-2a24da2e8a7d]
+Description=new window size full width half height of portrait screen
+size=1200,960
+sizerule=3
+types=1
+wmclassmatch=2
