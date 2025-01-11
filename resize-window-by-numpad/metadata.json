@@ -1,0 +1,22 @@
+{
+    "KPlugin": {
+        "Name": "Resize window to position",
+        "Description": "Resize current window toward corners, edges, or center of 3 vertical monitors",
+        "Icon": "preferences-system-windows",
+        "Authors": [
+            {
+                "Email": "korpiq@iki.fi",
+                "Name": "Kalle Hallivuori"
+            }
+        ],
+        "Id": "resizeTowardPosition",
+        "ServiceTypes": [
+            "KWin/Script"
+        ],
+        "Version": "0.2",
+        "License": "MIT",
+        "Website": "https://github.com/korpiq/kde-customization"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}

@@ -1,98 +1,124 @@
-Direction = [
-    "UpLeft", "Up", "UpRight", 
+const Direction = [
+    "UpLeft", "Up", "UpRight",
     "Left", "Center", "Right",
     "DownLeft", "Down", "DownRight"
 ].reduce((obj, p) => Object.assign(obj, { [p]: p }), {});
 
-
-[
-    ["Meta+KP_1", Direction.DownLeft]
-    ["Meta+KP_2", Direction.Down]
-    ["Meta+KP_3", Direction.DownRight]
-    ["Meta+KP_4", Direction.Left]
-    ["Meta+KP_5", Direction.Center]
-    ["Meta+KP_6", Direction.Right]
-    ["Meta+KP_7", Direction.UpLeft]
-    ["Meta+KP_8", Direction.Up]
-    ["Meta+KP_9", Direction.UpRight]
-].forEach((shortcut) => {
-    var name = "Resize Window: " + shortcut[1]
-    registerShortcut(name, name, shortcut[0], () => { resizeToward(shortcut[1]); });
-})
+const version = 'v0.2';
 
 function resizeToward(direction) {
     var client = workspace.activeClient;
-    var win = client.geometry;
+    var currentArea = client.geometry;
     var area = workspace.clientArea(KWin.MaximizeArea, client);
-    debug(direction, client.caption, client.geometry);
-    if (!client.moveable || win == area) return;
 
-    var shouldGrow = win.height < area.height / 2 || win.width < area.width / 2;
-    var divider = shouldGrow ? 2 : 3;
-    var newWidth = area.width / divider;
-    var newHeight = area.height / divider;
+    function isPlacedAt(x, y) {
+        return currentArea.x === x && currentArea.y === y;
+    }
 
-    client.clientStartUserMovedResized(client);
+    function isOfSize(width, height) {
+        return currentArea.width === width && currentArea.height === height;
+    }
+
+    function isCurrently(geometry) {
+        return isPlacedAt(geometry.x, geometry.y) && isOfSize(geometry.width, geometry.height);
+    }
+
+    let newArea = currentArea;
+
     switch (direction) {
         case Direction.UpLeft:
-            grow = win.x > 0 || win.y > 0;
-            win.x = 0;
-            win.y = 0;
-            win.width = divide(area.width, grow && 2);
-            win.height = divide(area.height, grow && 2);
-            break;
-
-            case Direction.Up:
-            win.x = area.width / 3;
-            win.y = 0;
-            win.width = area.width / 3;
-            win.height = area.height / 2;
-            break;
-
-            case Direction.UpRight:
-            break;
-        
-        case Direction.Left:
-            win.x = 0;
-            win.y = area.height / 4;
-            win.width = area.width / 3;
-            win.height = area.height / 2;
-            break;
-
-            case Direction.Center:
-            grow = win.x > 0 || win.y > 0;
-            if (win.x > 0 || win.y > 0) {
-                win.x = 0;
-                win.y = 0;
-                win.width = area.width;
-                win.height = area.height;
-            } else {
-                win.x = area.width / 3;
-                win.y = area.height / 4;
-                win.width = area.width / 3;
-                win.height = area.height / 2;
+            newArea = { x: 0, y: 0, width: area.width, height: area.height / 2 }
+            if (isCurrently(newArea)) {
+                newArea.width *= 2;
             }
             break;
 
-            case Direction.Right:
-            win.x = 2 * area.width / 3;
-            win.y = area.height / 4;
-            win.width = area.width / 3;
-            win.height = area.height / 2;
+        case Direction.Up:
+            newArea = { x: area.width, y: 0, width: area.width, height: area.height / 2 }
+              if(isCurrently(newArea)) {
+                  newArea.x = 0;
+                  newArea.width *= 3;
+              }
+            break;
+
+        case Direction.UpRight:
+            newArea = { x: area.width * 2, y: 0, width: area.width, height: area.height / 2 }
+            if (isCurrently(newArea)) {
+                newArea.x = area.width;
+                newArea.width *= 2;
+            }
+            break;
+
+        case Direction.Left:
+            newArea = { x: 0, y: 0, width: area.width, height: area.height }
+            if (isCurrently(newArea)) {
+                newArea.width *= 2;
+            }
+            break;
+
+        case Direction.Center:
+            newArea = { x: area.width, y: 0, width: area.width, height: area.height }
+            if (isCurrently(newArea)) {
+                newArea.x = 0;
+                newArea.width *= 3;
+            }
+            break;
+
+        case Direction.Right:
+            newArea = { x: area.width * 2, y: 0, width: area.width, height: area.height }
+            if (isCurrently(newArea)) {
+                newArea.x = area.width;
+                newArea.width *= 2;
+            }
             break;
 
         case Direction.DownLeft:
+            newArea = { x: 0, y: area.height / 2, width: area.width, height: area.height / 2 }
+            if (isCurrently(newArea)) {
+                newArea.width *= 2;
+            }
             break;
 
-            case Direction.Down:
-            win.x = area.width / 3;
-            win.y = area.height / 2;
-            win.width = area.width / 3;
-            win.height = area.height / 2;
+        case Direction.Down:
+            newArea = { x: area.width, y: area.height / 2, width: area.width, height: area.height / 2 }
+            if(isCurrently(newArea)) {
+                newArea.x = 0;
+                newArea.width *= 3;
+            }
             break;
 
         case Direction.DownRight:
+            newArea = { x: area.width * 2, y: area.height / 2, width: area.width, height: area.height / 2 }
+            if (isCurrently(newArea)) {
+                newArea.x = area.width;
+                newArea.width *= 2;
+            }
             break;
     }
-    client.clientFinishUserMovedResized(client);
+
+    print('Resize Window', direction, version, client.caption, currentArea, newArea);
+    if (newArea !== currentArea) {
+        client.clientStartUserMovedResized(client);
+        client.geometry.x = newArea.x;
+        client.geometry.y = newArea.y;
+        client.geometry.width = newArea.width;
+        client.geometry.height = newArea.height;
+        client.clientFinishUserMovedResized(client);
+    }
 }
+
+[
+    ["Meta+Num+1", Direction.DownLeft],
+    ["Meta+Num+2", Direction.Down],
+    ["Meta+Num+3", Direction.DownRight],
+    ["Meta+Num+4", Direction.Left],
+    ["Meta+Num+5", Direction.Center],
+    ["Meta+Num+6", Direction.Right],
+    ["Meta+Num+7", Direction.UpLeft],
+    ["Meta+Num+8", Direction.Up],
+    ["Meta+Num+9", Direction.UpRight]
+].forEach((shortcut) => {
+    const name = "Resize Window " + shortcut[1];
+    print('registerShortcut', name, version, shortcut[0], shortcut[1]);
+    registerShortcut(name, name + ' ' + version, shortcut[0], () => { resizeToward(shortcut[1]); });
+})
