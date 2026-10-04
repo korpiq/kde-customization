@@ -1,7 +1,0 @@
-[Desktop Entry]
-Exec=/home/kato/omat/kde-customization/keys.sh
-Icon=dialog-scripts
-Name=keys.sh
-Path=
-Type=Application
-X-KDE-AutostartScript=true

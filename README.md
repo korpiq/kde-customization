@@ -1,6 +1,6 @@
 # KDE customization
 
-See `./install.sh` for how to install some of the stuff.
+Each feature has its own install script, `install-*.sh`; run only the ones you want.
 
 ## Restart stuck monitor backgrounds
 
@@ -8,7 +8,11 @@ Script to restart monitor backgrounds when they go black and unresponsive.
 
 ## Caps Lock as Control and Escape keys
 
-Script to make Caps Lock a control key, and make control key emit Escape when pressed shortly.
+Moved to `~/.bash_utils/setup-keyd`, which uses keyd.
+
+## Hibernate
+
+`./install-hibernate.sh` installs a polkit rule allowing hibernation without authentication.
 
 ## KWin scripts
 
