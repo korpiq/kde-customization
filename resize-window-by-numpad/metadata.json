@@ -13,10 +13,11 @@
         "ServiceTypes": [
             "KWin/Script"
         ],
-        "Version": "0.2",
+        "Version": "0.5",
         "License": "MIT",
         "Website": "https://github.com/korpiq/kde-customization"
     },
     "X-Plasma-API": "javascript",
-    "X-Plasma-MainScript": "code/main.js"
+    "X-Plasma-MainScript": "code/main.js",
+    "KPackageStructure": "KWin/Script"
 }

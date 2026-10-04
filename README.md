@@ -12,7 +12,7 @@ Script to make Caps Lock a control key, and make control key emit Escape when pr
 
 ## KWin scripts
 
-### Installing
+### Installing from a package file
 
 1. Run `./package.sh` to produce `kwinscript` files
 2. Open KDE settings
@@ -40,8 +40,28 @@ I was able to create this by following these instructions:
 
 ### Resize window toward position
 
+Package: `resize-window-by-numpad`. Install (or update) with `./install-resize-window-by-numpad.sh`; it works on Plasma 6 and is safe to re-run. Script output goes to the journal: `journalctl -t kwin_wayland_wrapper --since "-2min" | grep "Reposition window"`.
+
 I like to work with multiple windows in predefined locations on my 3 vertical monitor setup.
 
-This script resizes and relocates current window toward the corner, edge, or center of workspace associated with numpad key locations.
+The workspace is a grid of 3 columns (one per monitor) by 2 rows. With Meta held, the numpad keys are laid out like the grid:
 
-If the window is already at that location, its size is toggled between the default and a reasonably bigger one.
+| Key (numpad) | Window goes to |
+|---|---|
+| 7 / 8 / 9 | Top Left / Top Center / Top Right |
+| 4 / 5 / 6 | Full Height Left / Center / Right |
+| 1 / 2 / 3 | Bottom Left / Bottom Center / Bottom Right |
+
+- `Meta+Num+<key>`: window fills that cell.
+- `Meta+Shift+Num+<key>`: wide variant. Left and right cells widen to two columns, center to all three.
+- `Meta+Num+Ins` (0): minimize the active window, or restore the one minimized last.
+- `Meta+Num+Del` (,): close the active window.
+
+A moved window is raised on top of the others.
+
+#### Shortcut key names
+
+With Meta held, KDE receives the numpad as navigation keys, so the shortcuts are registered under those names:
+`Home Up PgUp / Left Clear Right / End Down PgDown` for 7 8 9 / 4 5 6 / 1 2 3 (also with Shift).
+System Settings shows them like that, e.g. `Meta+Num+End` for key 1. Shortcuts already stored under an action name keep their stored keys when the script changes its defaults.
+Other shortcuts on the same keys (e.g. a leftover KZones `Meta+Num+<n>`) take priority and leave this script's binding empty.

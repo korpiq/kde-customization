@@ -1,124 +1,98 @@
-const Direction = [
-    "UpLeft", "Up", "UpRight",
-    "Left", "Center", "Right",
-    "DownLeft", "Down", "DownRight"
-].reduce((obj, p) => Object.assign(obj, { [p]: p }), {});
+const version = 'v0.8';
 
-const version = 'v0.2';
+// Screen layout: 3 monitors side by side; windows snap to a 3x2 grid of cells.
+const COLUMNS = 3;
+const ROWS = 2;
 
-function resizeToward(direction) {
-    var client = workspace.activeClient;
-    var currentArea = client.geometry;
-    var area = workspace.clientArea(KWin.MaximizeArea, client);
+const rowNames = ["Top", "Full Height", "Bottom"];
+const columnNames = ["Left", "Center", "Right"];
 
-    function isPlacedAt(x, y) {
-        return currentArea.x === x && currentArea.y === y;
+// [numpad key as delivered with Meta held, column, row]
+const keys = [
+    ["Home", 0, 0], ["Up", 1, 0], ["PgUp", 2, 0],
+    ["Left", 0, 1], ["Clear", 1, 1], ["Right", 2, 1],
+    ["End", 0, 2], ["Down", 1, 2], ["PgDown", 2, 2],
+];
+
+// Rows 0 and 2 are the upper and lower half; row 1 is the full height.
+function rowSpan(row) {
+    return row === 1 ? [0, ROWS] : [row === 0 ? 0 : 1, 1];
+}
+
+// Small: the column of the key. Big: two columns, or all three from the center.
+function columnSpan(column, big) {
+    if (!big) return [column, 1];
+    if (column === 1) return [0, COLUMNS];
+    return [column === 0 ? 0 : 1, 2];
+}
+
+function repositionWindow(column, row, big) {
+    const window = workspace.activeWindow;
+    console.warn('Reposition window: key', column, row, big, 'active:', window && window.caption,
+        'normal:', window && window.normalWindow, 'resizeable:', window && window.resizeable);
+    if (!window || !window.normalWindow || !window.resizeable) {
+        return;
     }
 
-    function isOfSize(width, height) {
-        return currentArea.width === width && currentArea.height === height;
-    }
+    try {
+        const area = workspace.virtualScreenGeometry;
+        const cellWidth = area.width / COLUMNS;
+        const cellHeight = area.height / ROWS;
+        const [col, colCount] = columnSpan(column, big);
+        const [rowStart, rowCount] = rowSpan(row);
 
-    function isCurrently(geometry) {
-        return isPlacedAt(geometry.x, geometry.y) && isOfSize(geometry.width, geometry.height);
-    }
+        const newArea = {
+            x: area.x + col * cellWidth,
+            y: area.y + rowStart * cellHeight,
+            width: colCount * cellWidth,
+            height: rowCount * cellHeight
+        };
 
-    let newArea = currentArea;
-
-    switch (direction) {
-        case Direction.UpLeft:
-            newArea = { x: 0, y: 0, width: area.width, height: area.height / 2 }
-            if (isCurrently(newArea)) {
-                newArea.width *= 2;
-            }
-            break;
-
-        case Direction.Up:
-            newArea = { x: area.width, y: 0, width: area.width, height: area.height / 2 }
-              if(isCurrently(newArea)) {
-                  newArea.x = 0;
-                  newArea.width *= 3;
-              }
-            break;
-
-        case Direction.UpRight:
-            newArea = { x: area.width * 2, y: 0, width: area.width, height: area.height / 2 }
-            if (isCurrently(newArea)) {
-                newArea.x = area.width;
-                newArea.width *= 2;
-            }
-            break;
-
-        case Direction.Left:
-            newArea = { x: 0, y: 0, width: area.width, height: area.height }
-            if (isCurrently(newArea)) {
-                newArea.width *= 2;
-            }
-            break;
-
-        case Direction.Center:
-            newArea = { x: area.width, y: 0, width: area.width, height: area.height }
-            if (isCurrently(newArea)) {
-                newArea.x = 0;
-                newArea.width *= 3;
-            }
-            break;
-
-        case Direction.Right:
-            newArea = { x: area.width * 2, y: 0, width: area.width, height: area.height }
-            if (isCurrently(newArea)) {
-                newArea.x = area.width;
-                newArea.width *= 2;
-            }
-            break;
-
-        case Direction.DownLeft:
-            newArea = { x: 0, y: area.height / 2, width: area.width, height: area.height / 2 }
-            if (isCurrently(newArea)) {
-                newArea.width *= 2;
-            }
-            break;
-
-        case Direction.Down:
-            newArea = { x: area.width, y: area.height / 2, width: area.width, height: area.height / 2 }
-            if(isCurrently(newArea)) {
-                newArea.x = 0;
-                newArea.width *= 3;
-            }
-            break;
-
-        case Direction.DownRight:
-            newArea = { x: area.width * 2, y: area.height / 2, width: area.width, height: area.height / 2 }
-            if (isCurrently(newArea)) {
-                newArea.x = area.width;
-                newArea.width *= 2;
-            }
-            break;
-    }
-
-    print('Resize Window', direction, version, client.caption, currentArea, newArea);
-    if (newArea !== currentArea) {
-        client.clientStartUserMovedResized(client);
-        client.geometry.x = newArea.x;
-        client.geometry.y = newArea.y;
-        client.geometry.width = newArea.width;
-        client.geometry.height = newArea.height;
-        client.clientFinishUserMovedResized(client);
+        console.warn('Reposition window', version, window.caption, JSON.stringify(window.frameGeometry),
+            'virtual screen:', JSON.stringify(area), 'target:', JSON.stringify(newArea));
+        window.setMaximize(false, false);
+        window.frameGeometry = newArea;
+        workspace.raiseWindow(window);
+    } catch (e) {
+        console.warn('Reposition window failed:', e, e.stack);
     }
 }
 
-[
-    ["Meta+Num+1", Direction.DownLeft],
-    ["Meta+Num+2", Direction.Down],
-    ["Meta+Num+3", Direction.DownRight],
-    ["Meta+Num+4", Direction.Left],
-    ["Meta+Num+5", Direction.Center],
-    ["Meta+Num+6", Direction.Right],
-    ["Meta+Num+7", Direction.UpLeft],
-    ["Meta+Num+8", Direction.Up],
-    ["Meta+Num+9", Direction.UpRight]
-].forEach((shortcut) => {
-    const name = "Resize Window " + shortcut[1];
-    print('registerShortcut', name, version, shortcut[0], shortcut[1]);
-    registerShortcut(name, name + ' ' + version, shortcut[0], () => { resizeToward(shortcut[1]); });
-})
+function register(name, shortcut, column, row, big) {
+    registerShortcut(name, name, shortcut, () => repositionWindow(column, row, big));
+}
+
+let lastMinimized = null;
+
+// Restores the window minimized last; otherwise minimizes the active window.
+function toggleMinimized() {
+    if (lastMinimized && lastMinimized.minimized) {
+        lastMinimized.minimized = false;
+        workspace.activeWindow = lastMinimized;
+        lastMinimized = null;
+        return;
+    }
+    const window = workspace.activeWindow;
+    if (window && window.minimizable) {
+        window.minimized = true;
+        lastMinimized = window;
+    }
+}
+
+function closeActiveWindow() {
+    const window = workspace.activeWindow;
+    if (window && window.closeable) {
+        window.closeWindow();
+    }
+}
+
+registerShortcut("Minimize or restore window", "Minimize or restore window", "Meta+Num+Ins", toggleMinimized);
+registerShortcut("Close window", "Close window", "Meta+Num+Del", closeActiveWindow);
+
+keys.forEach(([key, column, row]) => {
+    const position = rowNames[row] + " " + columnNames[column];
+    register("Reposition window " + position, "Meta+Num+" + key, column, row, false);
+    register("Reposition window wide " + position, "Meta+Shift+Num+" + key, column, row, true);
+});
+
+console.warn('Reposition window', version, 'loaded');
