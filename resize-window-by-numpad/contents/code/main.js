@@ -1,4 +1,4 @@
-const version = 'v0.10';
+const version = 'v0.11';
 
 // Screen layout: 3 monitors side by side; windows snap to a 3x2 grid of cells.
 const COLUMNS = 3;
@@ -7,11 +7,12 @@ const ROWS = 2;
 const rowNames = ["Top", "Full Height", "Bottom"];
 const columnNames = ["Left", "Center", "Right"];
 
-// [numpad key as delivered with Meta held, column, row]
+// [numpad key with NumLock off, with NumLock on, column, row]
+// Shift flips NumLock, so Shift shortcuts only need the NumLock-off key.
 const keys = [
-    ["Home", 0, 0], ["Up", 1, 0], ["PgUp", 2, 0],
-    ["Left", 0, 1], ["Clear", 1, 1], ["Right", 2, 1],
-    ["End", 0, 2], ["Down", 1, 2], ["PgDown", 2, 2],
+    ["Home", "7", 0, 0], ["Up", "8", 1, 0], ["PgUp", "9", 2, 0],
+    ["Left", "4", 0, 1], ["Clear", "5", 1, 1], ["Right", "6", 2, 1],
+    ["End", "1", 0, 2], ["Down", "2", 1, 2], ["PgDown", "3", 2, 2],
 ];
 
 // Rows 0 and 2 are the upper and lower half; row 1 is the full height.
@@ -115,11 +116,14 @@ function closeActiveWindow() {
 }
 
 registerShortcut("Minimize or restore window", "Minimize or restore window", "Meta+Num+Ins", toggleMinimized);
+registerShortcut("Minimize or restore window (NumLock on)", "Minimize or restore window (NumLock on)", "Meta+Num+0", toggleMinimized);
 registerShortcut("Close window", "Close window", "Meta+Num+Del", closeActiveWindow);
+registerShortcut("Close window (NumLock on)", "Close window (NumLock on)", "Meta+Num+,", closeActiveWindow);
 
-keys.forEach(([key, column, row]) => {
+keys.forEach(([key, digit, column, row]) => {
     const position = rowNames[row] + " " + columnNames[column];
     register("Reposition window " + position, "Meta+Num+" + key, column, row, false);
+    register("Reposition window " + position + " (NumLock on)", "Meta+Num+" + digit, column, row, false);
     register("Reposition window wide " + position, "Meta+Shift+Num+" + key, column, row, true);
 });
 

@@ -23,7 +23,7 @@ qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript "$ID" >/dev/n
 
 script_actions() {
     awk -F= '/^\[/ { in_kwin = ($0 == "[kwin]"); next }
-        in_kwin && /^(Reposition window |Minimize or restore window=|Close window=)/ { print $1 }' \
+        in_kwin && /^(Reposition window |Minimize or restore window[ =]|Close window[ =])/ { print $1 }' \
         ~/.config/kglobalshortcutsrc
 }
 

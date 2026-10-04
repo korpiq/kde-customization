@@ -50,7 +50,6 @@ A moved window is raised on top of the others.
 
 #### Shortcut key names
 
-With Meta held, KDE receives the numpad as navigation keys, so the shortcuts are registered under those names:
-`Home Up PgUp / Left Clear Right / End Down PgDown` for 7 8 9 / 4 5 6 / 1 2 3 (also with Shift).
-System Settings shows them like that, e.g. `Meta+Num+End` for key 1. Shortcuts already stored under an action name keep their stored keys when the script changes its defaults.
+The shortcuts work with NumLock on or off. KDE receives the numpad as digits with NumLock on and as navigation keys with NumLock off, and one action cannot have both, so each is registered twice: `Meta+Num+<digit>` as "... (NumLock on)", and `Meta+Num+Home Up PgUp / Left Clear Right / End Down PgDown` (7 8 9 / 4 5 6 / 1 2 3) for NumLock off. Shift flips NumLock, so the Shift shortcuts only need the navigation key names.
+System Settings shows them like that, e.g. `Meta+Num+End` for key 1. Shortcuts already stored under an action name keep their stored keys when the script changes its defaults; the installer clears them so the defaults apply.
 Other shortcuts on the same keys (e.g. a leftover KZones `Meta+Num+<n>`) take priority and leave this script's binding empty.
