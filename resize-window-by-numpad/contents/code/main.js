@@ -1,4 +1,4 @@
-const version = 'v0.9';
+const version = 'v0.10';
 
 // Screen layout: 3 monitors side by side; windows snap to a 3x2 grid of cells.
 const COLUMNS = 3;
@@ -44,13 +44,14 @@ function columnAreas() {
     return [...Array(COLUMNS).keys()].map(i => ({ x: left + i * width, y: top, width, height: bottom - top }));
 }
 
-// Spans whole columns horizontally; vertically only what every spanned screen leaves free.
+// Spans whole columns horizontally. Vertically takes the tallest usable extent among the
+// spanned screens, so a panel on one of several spanned screens is ignored.
 function spanArea(col, colCount) {
     const spanned = columnAreas().slice(col, col + colCount);
     const left = Math.min(...spanned.map(a => a.x));
     const right = Math.max(...spanned.map(a => a.x + a.width));
-    const top = Math.max(...spanned.map(a => a.y));
-    const bottom = Math.min(...spanned.map(a => a.y + a.height));
+    const top = Math.min(...spanned.map(a => a.y));
+    const bottom = Math.max(...spanned.map(a => a.y + a.height));
     return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
