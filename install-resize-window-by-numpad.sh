@@ -17,8 +17,21 @@ fi
 
 kwriteconfig6 --file kwinrc --group Plugins --key "${ID}Enabled" true
 
-# Reload the script in the running KWin so code changes take effect now.
+# Unload the script, and forget its stored shortcut bindings so that the
+# default bindings in main.js are registered again when it is reloaded.
 qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.unloadScript "$ID" >/dev/null || true
+
+script_actions() {
+    awk -F= '/^\[/ { in_kwin = ($0 == "[kwin]"); next }
+        in_kwin && /^(Reposition window |Minimize or restore window=|Close window=)/ { print $1 }' \
+        ~/.config/kglobalshortcutsrc
+}
+
+script_actions | while IFS= read -r action; do
+    busctl --user call org.kde.kglobalaccel /kglobalaccel org.kde.KGlobalAccel \
+        unregister ss kwin "$action" >/dev/null
+done
+
 qdbus6 org.kde.KWin /KWin reconfigure
 
 echo "Installed and enabled: $ID"

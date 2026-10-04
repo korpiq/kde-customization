@@ -26,23 +26,12 @@ Script to make Caps Lock a control key, and make control key emit Escape when pr
 2. log in without KDE, e.g. on a textual virtual terminal
 3. remove associated rows in `~/.config/kglobalshortcutsrc`
 
-### Resize window to fixed size and position with Meta+X
-
-I have three Lenovo monitors, each 1920x1200, turned to portraits, so 1200x1920, making up a desktop of 3600x1920 pixels.
-
-Zooming windows in KDE only zooms them to one screen at a time.
-
-This is my simplistic approach to resize a window onto the whole multiscreen desktop.
-
-I was able to create this by following these instructions:
-- https://develop.kde.org/docs/extend/plasma/kwin/
-- https://www.reddit.com/r/kde/comments/uct9dp/comment/i6crg1m/?utm_source=share&utm_medium=web2x&context=3
-
 ### Resize window toward position
 
 Package: `resize-window-by-numpad`. Install (or update) with `./install-resize-window-by-numpad.sh`; it works on Plasma 6 and is safe to re-run. Script output goes to the journal: `journalctl -t kwin_wayland_wrapper --since "-2min" | grep "Reposition window"`.
 
-I like to work with multiple windows in predefined locations on my 3 vertical monitor setup.
+I have three Lenovo monitors, each 1920x1200, turned to portraits, so 1200x1920, making up a desktop of 3600x1920 pixels.
+I like to work with multiple windows in predefined locations on this setup.
 
 The workspace is a grid of 3 columns (one per monitor) by 2 rows. With Meta held, the numpad keys are laid out like the grid:
 
@@ -53,7 +42,7 @@ The workspace is a grid of 3 columns (one per monitor) by 2 rows. With Meta held
 | 1 / 2 / 3 | Bottom Left / Bottom Center / Bottom Right |
 
 - `Meta+Num+<key>`: window fills that cell.
-- `Meta+Shift+Num+<key>`: wide variant. Left and right cells widen to two columns, center to all three.
+- `Meta+Shift+Num+<key>`: wide variant. Left and right cells widen to two columns, center to all three (`Meta+Shift+Num+Clear` makes the window cover the whole desktop).
 - `Meta+Num+Ins` (0): minimize the active window, or restore the one minimized last.
 - `Meta+Num+Del` (,): close the active window.
 
