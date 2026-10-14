@@ -52,6 +52,20 @@ The workspace is a grid of 3 columns (one per monitor) by 2 rows. With Meta held
 
 A moved window is raised on top of the others.
 
+#### Other screen arrangements
+
+The layout is chosen on every keypress from the screens connected at that moment, so docking and undocking need no reload.
+
+- **A single screen** (e.g. a laptop): the keys split it into thirds. With Shift, left keys (7 4 1) take the left half, right keys (9 6 3) the right half and center keys (8 5 2) the whole width.
+- **An external screen above the internal one**: columns as on a single screen, but the top row (7 8 9) is the upper screen and the bottom row (1 2 3) the lower one; the full height row (4 5 6) spans both where they overlap.
+- **Anything else**: the usable bounds are split evenly into 3 columns and 2 rows.
+
+The script log names the chosen layout (`threeColumns`, `single`, `stackedAbove` or `evenColumns`).
+
+#### Tests
+
+`node --test test/*.test.js` runs `main.js` against mocked screen setups and checks the resulting window geometry.
+
 #### Shortcut key names
 
 The shortcuts work with NumLock on or off. KDE receives the numpad as digits with NumLock on and as navigation keys with NumLock off, and one action cannot have both, so each is registered twice: `Meta+Num+<digit>` as "... (NumLock on)", and `Meta+Num+Home Up PgUp / Left Clear Right / End Down PgDown` (7 8 9 / 4 5 6 / 1 2 3) for NumLock off. Shift flips NumLock, so the Shift shortcuts only need the navigation key names.
